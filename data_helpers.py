@@ -3,7 +3,8 @@ import re
 import itertools
 from collections import Counter
 import pyIO
-
+import os
+import datetime
 
 def clean_str(string):
     """
@@ -25,37 +26,75 @@ def clean_str(string):
     string = re.sub(r"\s{2,}", " ", string)
     return string.strip().lower()
 
+def get_file_list(file_dir):
+    filename_list = []
 
-def load_data_and_labels(positive_data_file, negative_data_file):
+    if os.path.isfile(file_dir):
+        filename_list.append(file_dir)
+    else:
+        filename_list,_ = pyIO.traversalDir(file_dir)
+
+    filename_list = [e for e in filename_list if e.find('DS_Store') == -1]
+    return filename_list
+
+def get_all_list(file_dir):
+    filename_list = get_file_list(file_dir)
+
+    total_list = []
+    for index,filename in enumerate(filename_list):
+        print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), index, filename)
+        c_list = pyIO.get_content(filename)
+        total_list.extend(c_list)
+    print('len(total_list):', len(total_list))
+    return total_list
+
+def load_data_and_labels(dir_list):
+    dir_list.sort()
+
+    label_list = []
+    data_list = []
+    for i, file_dir in enumerate(dir_list):
+        print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), i, file_dir)
+        total_list = get_all_list(file_dir)
+
+        label = [0 for _ in dir_list]
+        label[i] = 1
+        for data in total_list:
+            label_list.append(label)
+            data_list.append(data)
+        print('label_list[:3]:', label_list[-3:])
+        print('data_list[:3]:', data_list[-3:])
+    return data_list, np.array(label_list)
+
     """
     Loads MR polarity data from files, splits the data into words and generates labels.
     Returns split sentences and labels.
     """
     # Load data from files
     #positive_examples = list(open(positive_data_file, "r").readlines())
-    positive_examples = pyIO.get_content(positive_data_file)
-    positive_examples = [s.strip() for s in positive_examples]
-
-    #negative_examples = list(open(negative_data_file, "r").readlines())
-    negative_examples = pyIO.get_content(negative_data_file)
-    negative_examples = [s.strip() for s in negative_examples]
-
-    glove_examples = pyIO.get_content("/Users/xinmei365/cnn-text-classification-tf/data/rt-polaritydata/1000.glov")
-    glove_examples = [s.strip() for s in glove_examples]
-
-    print(positive_examples[:3])
-    print(negative_examples[:3])
-    print(glove_examples[:3])
-
-    # Split by words
-    x_text = positive_examples + negative_examples + glove_examples
-    x_text = [clean_str(sent) for sent in x_text]
-    # Generate labels
-    positive_labels = [[0, 1, 0] for _ in positive_examples]#2
-    negative_labels = [[1, 0, 0] for _ in negative_examples]#1
-    glove_labels    = [[0, 0, 1] for _ in glove_examples]#0
-    y = np.concatenate([positive_labels, negative_labels, glove_labels], 0)
-    return [x_text, y]
+    # positive_examples = pyIO.get_content(positive_data_file)
+    # positive_examples = [s.strip() for s in positive_examples]
+    #
+    # #negative_examples = list(open(negative_data_file, "r").readlines())
+    # negative_examples = pyIO.get_content(negative_data_file)
+    # negative_examples = [s.strip() for s in negative_examples]
+    #
+    # glove_examples = pyIO.get_content("/Users/xinmei365/cnn-text-classification-tf/data/rt-polaritydata/1000.glov")
+    # glove_examples = [s.strip() for s in glove_examples]
+    #
+    # print(positive_examples[:3])
+    # print(negative_examples[:3])
+    # print(glove_examples[:3])
+    #
+    # # Split by words
+    # x_text = positive_examples + negative_examples + glove_examples
+    # x_text = [clean_str(sent) for sent in x_text]
+    # # Generate labels
+    # positive_labels = [[0, 1, 0] for _ in positive_examples]#2
+    # negative_labels = [[1, 0, 0] for _ in negative_examples]#1
+    # glove_labels    = [[0, 0, 1] for _ in glove_examples]#0
+    # y = np.concatenate([positive_labels, negative_labels, glove_labels], 0)
+    # return [x_text, y]
 
 
 def batch_iter(data, batch_size, num_epochs, shuffle=True):
