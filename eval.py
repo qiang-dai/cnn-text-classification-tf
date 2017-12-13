@@ -9,6 +9,7 @@ import data_helpers
 from text_cnn import TextCNN
 from tensorflow.contrib import learn
 import csv
+import sys,os
 
 # Parameters
 # ==================================================
@@ -19,7 +20,7 @@ tf.flags.DEFINE_string("negative_data_file", "./data/rt-polaritydata/rt-polarity
 
 # Eval Parameters
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
-tf.flags.DEFINE_string("checkpoint_dir", "/Users/xinmei365/cnn-text-classification-tf/runs/1513173269/checkpoints", "Checkpoint directory from training run")
+tf.flags.DEFINE_string("checkpoint_dir", sys.argv[1], "Checkpoint directory from training run")
 tf.flags.DEFINE_boolean("eval_train", False, "Evaluate on all training data")
 
 # Misc Parameters
@@ -53,6 +54,7 @@ print("\nEvaluating...\n")
 # Evaluation
 # ==================================================
 checkpoint_file = tf.train.latest_checkpoint(FLAGS.checkpoint_dir)
+# checkpoint_file = FLAGS.checkpoint_dir
 graph = tf.Graph()
 with graph.as_default():
     session_conf = tf.ConfigProto(
