@@ -48,7 +48,7 @@ def get_all_list(file_dir):
     print('len(total_list):', len(total_list))
     return total_list
 
-def load_data_and_labels(dir_list):
+def load_data_and_labels(dir_list, label_size, max_pos):
     dir_list.sort()
 
     label_list = []
@@ -57,8 +57,12 @@ def load_data_and_labels(dir_list):
         print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), i, file_dir)
         total_list = get_all_list(file_dir)
 
-        label = [0 for _ in dir_list]
-        label[i] = 1
+        label = [0 for _ in range(label_size)]
+        if max_pos >= 0:
+            label[max_pos] = 1
+        else:
+            label[i] = 1
+
         for data in total_list:
             label_list.append(label)
             data_list.append(data)
