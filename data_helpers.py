@@ -37,7 +37,7 @@ def get_file_list(file_dir):
     filename_list = [e for e in filename_list if e.find('DS_Store') == -1]
     return filename_list
 
-def get_all_list(file_dir):
+def get_all_list(file_dir, threshold_line_cnt):
     filename_list = get_file_list(file_dir)
 
     total_list = []
@@ -45,17 +45,22 @@ def get_all_list(file_dir):
         print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), index, filename)
         c_list = pyIO.get_content(filename)
         total_list.extend(c_list)
+
+        ###threshold_line_cnt limit
+        if len(total_list) > threshold_line_cnt:
+            total_list = total_list[:threshold_line_cnt]
+            break
     print('len(total_list):', len(total_list))
     return total_list
 
-def load_data_and_labels(dir_list, label_size, max_pos):
+def load_data_and_labels(dir_list, label_size, max_pos, threshold_line_cnt):
     dir_list.sort()
 
     label_list = []
     data_list = []
     for i, file_dir in enumerate(dir_list):
         print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), i, file_dir)
-        total_list = get_all_list(file_dir)
+        total_list = get_all_list(file_dir, threshold_line_cnt)
 
         label = [0 for _ in range(label_size)]
         if max_pos >= 0:

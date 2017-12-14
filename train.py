@@ -8,6 +8,7 @@ import datetime
 import data_helpers
 from text_cnn import TextCNN
 from tensorflow.contrib import learn
+import sys,os
 
 # Parameters
 # ==================================================
@@ -44,6 +45,10 @@ print("")
 # Data Preparation
 # ==================================================
 
+threshold_line_cnt = 10*10000
+if len(sys.argv) > 1:
+    threshold_line_cnt = int(sys.argv[1])
+
 # Load data
 print("Loading data...")
 dir_list = [
@@ -53,7 +58,7 @@ dir_list = [
     'data/dir_twitter',
 ]
 # x_text, y = data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
-x_text, y = data_helpers.load_data_and_labels(dir_list, len(dir_list), -1)
+x_text, y = data_helpers.load_data_and_labels(dir_list, len(dir_list), -1, threshold_line_cnt)
 
 # Build vocabulary
 max_document_length = max([len(x.split(" ")) for x in x_text])
