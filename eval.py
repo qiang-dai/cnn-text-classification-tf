@@ -36,6 +36,7 @@ for attr, value in sorted(FLAGS.__flags.items()):
 print("")
 
 test_files = [
+    "test/100.keras",
     "test/100.kika",
     "test/100.news",
     "test/100.twitter",

@@ -44,7 +44,15 @@ def get_all_list(file_dir, threshold_line_cnt):
     for index,filename in enumerate(filename_list):
         print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), index, filename)
         c_list = pyIO.get_content(filename)
-        total_list.extend(c_list)
+
+        for c in c_list:
+            tmp_list = c.split(' ')
+            ###按32进行切分
+            for i,e in enumerate(tmp_list):
+                tmp = tmp_list[i*32:(i+1)*32]
+                total_list.append(' '.join(tmp))
+                if (i+1)*32 >= len(tmp_list):
+                    break
 
         ###threshold_line_cnt limit
         if len(total_list) > threshold_line_cnt:
